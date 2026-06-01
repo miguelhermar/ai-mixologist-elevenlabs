@@ -34,7 +34,7 @@
         },
         "language_presets": {},
         "agent": {
-            "first_message": "Ah, wine — my favorite subject. I'm the house sommelier. Tell me what you're eating or the mood you're after, and I'll find you the right bottle.",
+            "first_message": "Hello, I'm Lily, the house sommelier. Tell me what you're eating or the mood you're after, and I'll find you the right bottle.",
             "language": "en",
             "dynamic_variables": {
                 "dynamic_variable_placeholders": {}
