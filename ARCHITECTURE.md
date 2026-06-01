@@ -349,7 +349,7 @@ sequenceDiagram
     User->>LC: "what wine goes with steak?"
     Note over LC: condition matches → transfer_to_agent
     LC-->>User: "Wine — let me bring in our sommelier."
-    LC->>SM: transfer (same conversation; transcript preserved)
+    LC->>SM: transfer (same conversation, transcript preserved)
     SM-->>User: (Lily) greets + pairs, citing the house cellar notes
     User->>SM: "actually, make me a cocktail"
     Note over SM: condition matches → transfer_to_agent (back)
