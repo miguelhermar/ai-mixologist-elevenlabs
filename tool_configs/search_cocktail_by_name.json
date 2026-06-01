@@ -3,7 +3,7 @@
     "description": "Look up full cocktail recipes by name. Use when the guest names a specific drink (e.g. \"how do I make a margarita?\" or \"what's in a negroni?\"). Returns matching cocktails with ingredients, measures, glass, and instructions.",
     "type": "webhook",
     "api_schema": {
-        "url": "https://chart-karma-pilot-extra.trycloudflare.com/api/cocktails/search",
+        "url": "https://ai-mixologist-elevenlabs.vercel.app/api/cocktails/search",
         "method": "GET",
         "query_params_schema": {
             "properties": {

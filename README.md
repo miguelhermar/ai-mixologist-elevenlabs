@@ -12,6 +12,12 @@ Built in **phases 1–6, all complete and live voice-verified** end-to-end — i
 Phase 6 Sommelier sub-agent and its bidirectional agent transfer. See
 [the full plan](./plan.md) and [Roadmap](#roadmap) below.
 
+> ### 🚀 Live in production
+> **<https://ai-mixologist-elevenlabs.vercel.app>** — deployed on **Vercel** with **Upstash
+> Redis** for durable storage. Pushes to `main` auto-deploy. The same code runs locally
+> (file-backed stores, no auth); production hardening switches on purely from env vars.
+> See [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ### Documentation
 - **[USER-GUIDE.md](USER-GUIDE.md)** — brief, friendly guide for people *using* the app.
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** — how it's wired + workflow diagrams (what happens on each interaction).
@@ -207,7 +213,7 @@ npm test         # run the full Vitest suite once
 npm run test:watch
 ```
 
-Coverage (**201 tests**, 36 files):
+Coverage (**202 tests**, 36 files):
 
 | File | Kind | What it checks |
 |---|---|---|
@@ -236,7 +242,7 @@ Coverage (**201 tests**, 36 files):
 | [`app/api/post-call/route.test.ts`](app/api/post-call/route.test.ts) | integration | 401 (missing/bad/tampered sig), 200 + persists valid event, ignores non-transcription, 400 on bad JSON |
 | [`app/api/summaries/route.test.ts`](app/api/summaries/route.test.ts) | integration | lists persisted summaries; 500 on store failure |
 | [`components/CallSummaryList.test.tsx`](components/CallSummaryList.test.tsx) | component | empty state, renders recap + data collection + eval verdicts; `formatDuration` |
-| [`lib/kv.test.ts`](lib/kv.test.ts) | unit | Upstash client factory: not-configured → null, both env vars required, key prefix |
+| [`lib/kv.test.ts`](lib/kv.test.ts) | unit | Upstash client factory: not-configured → null, both env vars required, **accepts `KV_REST_API_*` or `UPSTASH_REDIS_REST_*` naming**, key prefix |
 | [`lib/favorites.redis.test.ts`](lib/favorites.redis.test.ts) · [`lib/callSummaries.redis.test.ts`](lib/callSummaries.redis.test.ts) | unit | the Redis backend of each store (mocked client): read/upsert, newest-first |
 | [`lib/originGuard.test.ts`](lib/originGuard.test.ts) | unit | same-origin guard: allow no-origin/matching, block foreign, PUBLIC_BASE_URL host |
 | [`lib/ratelimit.test.ts`](lib/ratelimit.test.ts) | unit | no-op when Upstash absent; `clientIp` header parsing |
@@ -249,10 +255,11 @@ deployment. See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the full Vercel + Upstash
 short, production adds three things, all gated purely on environment variables (so local dev
 and tests are unchanged):
 
-- **Durable storage** — set `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` (the
-  Upstash Vercel Marketplace integration does this) and the favorites + call-summary stores
-  use Redis instead of `.data/*.json` (a serverless filesystem is read-only). See
-  [`lib/kv.ts`](lib/kv.ts).
+- **Durable storage** — once the Upstash REST credentials are set, the favorites +
+  call-summary stores use Redis instead of `.data/*.json` (a serverless filesystem is
+  read-only). The Vercel Marketplace Upstash integration injects them as
+  `KV_REST_API_URL` / `KV_REST_API_TOKEN`; [`lib/kv.ts`](lib/kv.ts) accepts those **or**
+  the `UPSTASH_REDIS_REST_URL` / `_TOKEN` pair.
 - **Quota guard on `/api/signed-url`** — a same-origin check ([`lib/originGuard.ts`](lib/originGuard.ts))
   + per-IP rate limit ([`lib/ratelimit.ts`](lib/ratelimit.ts)) so the no-login, credit-spending
   endpoint can't be drained by a bot (403 foreign origin / 429 too many).

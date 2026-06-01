@@ -25,7 +25,8 @@ takes over in her own voice, then hands you back to the bar when you're done.
 - 🍷 **Talk wine** — ask for a pairing or a bottle and it hands you to the **Sommelier**,
   a second agent with a **different voice** and her own wine knowledge, then hands you back.
 - 🌍 **Speak English or Spanish**, switching mid-conversation if you do.
-- ⭐ **Save favorite drinks**, and give you a **recap after each call** (the `/summary` page).
+- ⭐ **Save favorite drinks**, and generate a **recap after each call** — viewable on the
+  host's private `/summary` page (see the last section).
 
 **It won't:** take orders for delivery, discuss anything off-topic from drinks & hosting,
 or push you to drink more — it'll happily steer you to water or a zero-proof option.
@@ -34,9 +35,10 @@ or push you to drink more — it'll happily steer you to water or a zero-proof o
 
 ## Step up to the bar
 
-1. **Open** http://localhost:3000. You'll land on the **bar dashboard**: the voice widget
-   on the left, and live panels on the right (recipe card, timers, shopping list) that fill
-   in as you talk.
+1. **Open** the bar: **<https://ai-mixologist-elevenlabs.vercel.app>** (or `http://localhost:3000`
+   if you're running it yourself). You'll land on the **bar dashboard**: the voice widget on
+   the left, and live panels on the right (recipe card, timers, shopping list) that fill in as
+   you talk.
 2. *(Optional)* **Personalize your visit** — before connecting, fill the short form: your
    **name**, **taste** (e.g. "smoky and bitter"), **alcohol preference** (regular / low-ABV /
    zero-proof), and the **bottles you've got**. Skip it entirely and it still works great —
@@ -138,23 +140,28 @@ shows the **Sommelier handoff**.
     **random** pick.
 15. *"That's me for tonight — ¡muchas gracias!"* → it answers in kind and **hangs up** for you.
 
-Then open **[/summary](http://localhost:3000/summary)** to see the recap of what you just did.
+A recap of everything you just did is generated right after you hang up — the host can see it
+on the private `/summary` page (see below).
 
 > 💡 Your **shopping list** and **mood** are remembered across reloads; the recipe card and
 > timers clear when you refresh.
 
 ---
 
-## After the call: your recap 📋
-Once a conversation ends, head to **[/summary](http://localhost:3000/summary)** (linked at
-the bottom of the bar) for a short recap of each visit:
-- a **plain-language summary** of what you talked about,
-- the **drink you landed on**, your **taste** and **alcohol preference**, and whether you
+## After the call: the recap 📋 (host view)
+Once a conversation ends, ElevenLabs generates a short recap of the visit, shown on the
+**`/summary`** page:
+- a **plain-language summary** of what was talked about,
+- the **drink landed on**, the guest's **taste** and **alcohol preference**, and whether they
   **actually made something**,
-- two quality checks — did you get a **complete, makeable recipe**, and was the service
-  **responsible** (it honored your alcohol preference).
+- two quality checks — was it a **complete, makeable recipe**, and was the service
+  **responsible** (alcohol preference honored).
 
-It appears a few seconds after you hang up (the recap is generated right after the call).
+It appears a few seconds after the call (the recap is generated right after hangup).
+
+> 🔒 **On the live site, `/summary` is private** — it's the host's analytics view (other
+> guests' recaps + taste profiles live there), so it's behind a username/password. Running
+> locally with `npm run dev`, it's open at `http://localhost:3000/summary`.
 
 ---
 

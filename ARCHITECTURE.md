@@ -1,8 +1,15 @@
 # Architecture & Workflow — Last Call
 
-How the app is wired today (through Phase 6), what happens when a user interacts with
-it, and where each piece of code lives. For the multi-phase plan see [plan.md](plan.md);
-for build history and how to continue see [HANDOFF.md](HANDOFF.md).
+How the app is wired today (through Phase 6 + the production deploy), what happens when
+a user interacts with it, and where each piece of code lives. For the multi-phase plan
+see [plan.md](plan.md); for build history and how to continue see [HANDOFF.md](HANDOFF.md);
+for the deploy runbook see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+> **Live in production:** <https://ai-mixologist-elevenlabs.vercel.app> (Vercel + Upstash
+> Redis). The diagrams below show the local-dev wiring, where the public URL that
+> ElevenLabs' cloud calls is a **cloudflared tunnel**. **In production that public URL is
+> the stable Vercel domain instead** — everything else is identical, and the same code
+> serves both (see [Production deployment](#production-deployment-vercel--upstash)).
 
 ---
 
@@ -473,7 +480,7 @@ can see *where* a failure happened. Every line is scoped, e.g.
 | `TOOL_SHARED_SECRET` | `.env.local` + an ElevenLabs workspace secret (by `secret_id`) | `/api/favorites` + the agent's tool call — **never** the committed tool config or the browser |
 | `POSTCALL_WEBHOOK_SECRET` | `.env.local` (minted by ElevenLabs at webhook creation) | `/api/post-call` HMAC verify only — never the browser or committed config |
 | `PUBLIC_BASE_URL` | `.env.local` / host env (+ baked into `tool_configs/*.json` + the webhook URL) | not sensitive (the public base URL) |
-| `UPSTASH_REDIS_REST_URL` / `_TOKEN` | host env (production only) | the server-side store clients only — never the browser |
+| `KV_REST_API_URL` / `KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_URL` / `_TOKEN`) | host env (production only; Marketplace injects the `KV_*` pair) | the server-side store clients only — never the browser |
 | `SUMMARY_USER` / `SUMMARY_PASSWORD` | host env (production) | the [proxy.ts](proxy.ts) Basic Auth check only |
 
 The browser never receives the API key. This boundary is enforced by keeping all
@@ -488,12 +495,15 @@ Locally the app runs with a file-backed store and no auth. The **same code**
 hardens itself for a public deployment purely from environment variables — see
 [DEPLOYMENT.md](DEPLOYMENT.md) for the runbook. Three layers switch on:
 
-- **Durable storage.** A serverless host has a read-only filesystem, so when
-  `UPSTASH_REDIS_REST_URL` + `_TOKEN` are present, [lib/favorites.ts](lib/favorites.ts)
-  and [lib/callSummaries.ts](lib/callSummaries.ts) persist to **Upstash Redis**
-  (via [lib/kv.ts](lib/kv.ts)) instead of `.data/*.json` — same function signatures,
-  one code path gated on config. Favorites → a JSON array at `last-call:favorites`;
-  summaries → a hash `last-call:call-summaries` keyed by `conversationId` (native upsert).
+- **Durable storage.** A serverless host has a read-only filesystem, so when the Upstash
+  REST credentials are present, [lib/favorites.ts](lib/favorites.ts) and
+  [lib/callSummaries.ts](lib/callSummaries.ts) persist to **Upstash Redis** (via
+  [lib/kv.ts](lib/kv.ts)) instead of `.data/*.json` — same function signatures, one code
+  path gated on config. Favorites → a JSON array at `last-call:favorites`; summaries → a
+  hash `last-call:call-summaries` keyed by `conversationId` (native upsert).
+  `kv.ts` reads the credentials from **either** naming convention —
+  `UPSTASH_REDIS_REST_URL`/`_TOKEN` *or* `KV_REST_API_URL`/`KV_REST_API_TOKEN` — because the
+  **Vercel Marketplace Upstash integration injects the `KV_*` names**, not the Upstash ones.
 - **Quota guard on the public, no-login `/api/signed-url`.** Each call spends
   ElevenLabs quota, so the route runs a same-origin check
   ([lib/originGuard.ts](lib/originGuard.ts) → 403 on a foreign Origin/Referer) and a

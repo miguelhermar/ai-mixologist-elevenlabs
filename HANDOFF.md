@@ -5,8 +5,16 @@ This is the running log so a fresh session can continue the build with full cont
 
 - **Project:** "Last Call" — AI mixologist & voice bar concierge on the ElevenLabs
   Agents platform. Full multi-phase plan: [plan.md](plan.md).
-- **Last updated:** 2026-06-01 (**production-deploy hardening** session — see "## Session log").
-  All six phases complete + live-verified; the app is now wired for a hardened public deploy.
+- **Last updated:** 2026-06-01 (**production deploy EXECUTED + docs refresh** — see "## Session log").
+  All six phases complete + live-verified, and the app is now **LIVE in production**.
+- **🚀 LIVE: <https://ai-mixologist-elevenlabs.vercel.app>** (Vercel + Upstash Redis; GitHub
+  `miguelhermar/ai-mixologist-elevenlabs` → auto-deploys on push to `main`). Deployed
+  2026-06-01 and verified end-to-end on a real call (`conv_7001kt1pjkp6fsrvpqym43d34z2f`):
+  golden path + Sommelier transfer + post-call analytics persisted to Redis + a favorite
+  written to and read back from Upstash. **Key fix during deploy:** the Vercel Marketplace
+  Upstash integration injects `KV_REST_API_URL`/`KV_REST_API_TOKEN` (not
+  `UPSTASH_REDIS_REST_*`), so [lib/kv.ts](lib/kv.ts) now accepts either naming (else writes
+  would have silently hit the read-only FS). See [DEPLOYMENT.md](DEPLOYMENT.md).
 - **🚀 Production deploy hardening (2026-06-01):** prepared the app for a public Vercel + Upstash
   deployment (off the cloudflared tunnel). **No behavior change locally** — every new layer is
   gated on env vars and no-ops without them, so `npm run dev` + tests are unchanged. (1) **Durable
@@ -20,10 +28,9 @@ This is the running log so a fresh session can continue the build with full cont
   on `/summary` + `/api/summaries`; unset → dev-allow, **prod-503**. (4) **[scripts/repoint-tools.mjs](scripts/repoint-tools.mjs)**
   (`npm run tools:repoint`) rewrites the 6 webhook tool URLs from `PUBLIC_BASE_URL` + pushes.
   (5) Migrated `middleware.ts` → **`proxy.ts`** (Next 16 renamed the convention; Node runtime).
-  **201 tests** (was 169; +32), tsc/lint/build green. New runbook: **[DEPLOYMENT.md](DEPLOYMENT.md)**.
-  **Not yet executed live** — the Vercel/Upstash account setup + first deploy is the next step (needs
-  the user to create the accounts). Also fixed the stale Phase-4 dynamic-variable paragraph + runbook
-  below to match the corrected "client always sends defaults" behavior.
+  **202 tests** (was 169; +33), tsc/lint/build green. New runbook: **[DEPLOYMENT.md](DEPLOYMENT.md)**.
+  **✅ Executed live 2026-06-01** (see the top bullet + Session log). Also fixed the stale Phase-4
+  dynamic-variable paragraph + runbook below to match the corrected "client always sends defaults" behavior.
 - **✅ Phase 6 live voice test PASSED (2026-05-31)** — conversation
   `conv_8801kt0hw51hev9ap1p071jpgeqz` (read from the API): **both transfers fired** —
   Last-Call→Sommelier ("Wine — let me bring in our sommelier" → Lily greeted in her own
@@ -119,6 +126,35 @@ This is the running log so a fresh session can continue the build with full cont
 ---
 
 ## Session log
+
+### 2026-06-01 — 🚀 Production deploy EXECUTED (Vercel + Upstash) + docs refresh
+Took the code from "deploy-ready" to **LIVE**: <https://ai-mixologist-elevenlabs.vercel.app>.
+Flow: `npx vercel login` → dashboard Git import of `miguelhermar/ai-mixologist-elevenlabs`
+(auto-deploys on push) → `vercel link` → user connected the Upstash store
+`upstash-kv-charcoal-apple` → set all 8 prod env vars via `vercel env add`
+(`XI_API_KEY`, `AGENT_ID`, `COCKTAILDB_KEY`, `TOOL_SHARED_SECRET`,
+`SUMMARY_USER`/`SUMMARY_PASSWORD`, `PUBLIC_BASE_URL`, `POSTCALL_WEBHOOK_SECRET`) →
+`npm run tools:repoint` to the prod domain + `tools push` (needs `ELEVENLABS_API_KEY`
+exported; the CLI ignores `.env.local`) → `register-postcall-webhook.mjs` (new webhook
+`a84c5adab24e468c991f6d6e30dbcab7`, linked to the agent) → `vercel --prod`.
+- **Bug caught + fixed during deploy:** the Vercel Marketplace Upstash integration injects
+  `KV_REST_API_URL`/`KV_REST_API_TOKEN`, **not** `UPSTASH_REDIS_REST_*` — so `Redis.fromEnv()`
+  + `isRedisConfigured()` would have returned false in prod and silently fallen back to the
+  read-only-FS file store, breaking all writes. Patched [lib/kv.ts](lib/kv.ts) to resolve
+  url/token from either naming + `new Redis({url,token})`; added a regression test
+  (now **202 tests**). Commit `d0d5e6b`.
+- **Verified live** (curl + a real voice call `conv_7001kt1pjkp6fsrvpqym43d34z2f`, 304s,
+  `callSuccessful:success`): guards (`/summary`→401, `/api/summaries` w/creds→200,
+  `/api/post-call` unsigned→401), golden path, **bidirectional Sommelier transfer**, post-call
+  webhook HMAC-verified + summary persisted to Upstash (all 4 data_collection fields + both eval
+  criteria success), and `save_favorite` wrote `last-call:favorites` to Redis (durable across redeploys).
+- **Cleanup:** deleted the 4 stale cloudflared post-call webhooks in ElevenLabs (kept the prod one);
+  reset local `.data/*.json` to empty.
+- **Docs refreshed** to match production (no stale info): DEPLOYMENT (rewritten as executed runbook +
+  the `KV_*` gotcha + `ELEVENLABS_API_KEY` note), ARCHITECTURE (live banner + storage naming),
+  README (live-URL banner, 202 tests, `KV_*`), USER-GUIDE (live URL + `/summary` is host-private in prod),
+  plan.md (status banner). **Live secrets to harden later:** `SUMMARY_USER`/`SUMMARY_PASSWORD` are
+  currently the placeholder `admin-test`/`admin-test-passwd`.
 
 ### 2026-06-01 — QA / consistency pass + full-coverage live re-verification (no new features)
 A polish-and-verify session: make every doc/UI surface consistent now that all 6 phases are

@@ -1,5 +1,22 @@
 # Plan — "Last Call": AI Mixologist & Bar Concierge (ElevenLabs Agent)
 
+> ## ✅ Status: COMPLETE + DEPLOYED (2026-06-01)
+> This is the **original planning document**, kept for reference. Everything below was built:
+> all phases **1–6** (plus the stretch Sommelier sub-agent) are complete and live
+> voice-verified, and the app is **deployed to production** at
+> <https://ai-mixologist-elevenlabs.vercel.app> (Vercel + Upstash Redis).
+>
+> A few implementation details evolved from this plan — trust the code + the other docs for
+> current truth:
+> - The ElevenLabs CLI is **`elevenlabs`** (was drafted here as `convai`); configs live in
+>   `agent_configs/*.json` + `tool_configs/*.json` at the repo root (not `convai/…/prod/`).
+> - Two agents ship: `Last-Call.json` and `Sommelier.json` (`agents.json` registry).
+> - Production adds durable **Upstash Redis** storage, a `/api/signed-url` quota guard, and
+>   HTTP Basic Auth on `/summary` — none of which were in the original "out of scope" note.
+>
+> For current state see **[README.md](README.md)**, **[ARCHITECTURE.md](ARCHITECTURE.md)**,
+> **[DEPLOYMENT.md](DEPLOYMENT.md)**, and **[HANDOFF.md](HANDOFF.md)**.
+
 ## Context
 
 The goal is to build a small-but-complete ElevenLabs **Agents** voice agent that is both

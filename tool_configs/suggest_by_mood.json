@@ -3,7 +3,7 @@
     "description": "Suggest cocktails that fit a mood, honoring the guest's ABV preference. Use when the guest describes a vibe rather than a specific drink (e.g. \"something bright and refreshing\" or \"a cozy nightcap\"). Returns a short list of drink names and ids; call get_cocktail_details to make one.",
     "type": "webhook",
     "api_schema": {
-        "url": "https://chart-karma-pilot-extra.trycloudflare.com/api/cocktails/by-mood",
+        "url": "https://ai-mixologist-elevenlabs.vercel.app/api/cocktails/by-mood",
         "method": "GET",
         "query_params_schema": {
             "properties": {

@@ -3,7 +3,7 @@
     "description": "Get the full recipe for one cocktail by its id. Use after find_cocktails_by_ingredient or suggest_by_mood returns a drink id and the guest wants to make it. Returns ingredients with measures, glass, and step-by-step instructions.",
     "type": "webhook",
     "api_schema": {
-        "url": "https://chart-karma-pilot-extra.trycloudflare.com/api/cocktails/{id}",
+        "url": "https://ai-mixologist-elevenlabs.vercel.app/api/cocktails/{id}",
         "method": "GET",
         "path_params_schema": {
             "id": {
