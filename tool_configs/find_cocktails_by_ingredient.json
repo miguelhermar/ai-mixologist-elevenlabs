@@ -1,0 +1,30 @@
+{
+    "name": "find_cocktails_by_ingredient",
+    "description": "Find cocktails that use a given ingredient. Use when the guest says what they have on hand (e.g. \"I've got gin\" or \"what can I make with rum?\"). Returns a short list of drink names and ids; call get_cocktail_details for a full recipe.",
+    "type": "webhook",
+    "api_schema": {
+        "url": "https://chart-karma-pilot-extra.trycloudflare.com/api/cocktails/by-ingredient",
+        "method": "GET",
+        "query_params_schema": {
+            "properties": {
+                "ingredient": {
+                    "type": "string",
+                    "description": "A single spirit or ingredient name, e.g. \"Gin\", \"Rum\", \"Tequila\", \"Lime\"."
+                }
+            },
+            "required": [
+                "ingredient"
+            ]
+        },
+        "request_headers": {
+            "Content-Type": "application/json"
+        }
+    },
+    "response_timeout_secs": 20,
+    "dynamic_variables": {
+        "dynamic_variable_placeholders": {}
+    },
+    "assignments": [],
+    "disable_interruptions": false,
+    "force_pre_tool_speech": false
+}

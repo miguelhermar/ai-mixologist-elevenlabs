@@ -1,0 +1,30 @@
+{
+    "name": "search_cocktail_by_name",
+    "description": "Look up full cocktail recipes by name. Use when the guest names a specific drink (e.g. \"how do I make a margarita?\" or \"what's in a negroni?\"). Returns matching cocktails with ingredients, measures, glass, and instructions.",
+    "type": "webhook",
+    "api_schema": {
+        "url": "https://chart-karma-pilot-extra.trycloudflare.com/api/cocktails/search",
+        "method": "GET",
+        "query_params_schema": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The cocktail name to search for, e.g. \"margarita\" or \"old fashioned\"."
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "request_headers": {
+            "Content-Type": "application/json"
+        }
+    },
+    "response_timeout_secs": 20,
+    "dynamic_variables": {
+        "dynamic_variable_placeholders": {}
+    },
+    "assignments": [],
+    "disable_interruptions": false,
+    "force_pre_tool_speech": false
+}

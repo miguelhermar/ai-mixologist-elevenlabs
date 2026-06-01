@@ -1,0 +1,25 @@
+{
+    "name": "add_to_shopping_list",
+    "description": "Add one or more items to the guest's on-screen shopping list — bottles, mixers, garnishes, or tools they're missing for a drink. Duplicates are ignored automatically. Call it when the guest doesn't have something a recipe needs, or when they ask you to note something down. Does not return anything.",
+    "type": "client",
+    "expects_response": false,
+    "response_timeout_secs": 10,
+    "parameters": {
+        "type": "object",
+        "required": ["items"],
+        "description": "The items to add.",
+        "properties": {
+            "items": {
+                "type": "array",
+                "description": "Items to add, each a short plain name, e.g. [\"Lime\", \"Simple syrup\", \"Cocktail shaker\"].",
+                "items": {
+                    "type": "string",
+                    "description": "A single shopping-list item."
+                }
+            }
+        }
+    },
+    "dynamic_variables": {
+        "dynamic_variable_placeholders": {}
+    }
+}

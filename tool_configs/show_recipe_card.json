@@ -1,0 +1,60 @@
+{
+    "name": "show_recipe_card",
+    "description": "Display a cocktail recipe card on the guest's screen so they can follow along while you talk. ALWAYS prefer passing the drink's `id` (from get_cocktail_details, find_cocktails_by_ingredient, suggest_by_mood, search_cocktail_by_name, or random_cocktail) — the card then fetches the exact, accurate recipe itself. Only fall back to passing name/ingredients/steps inline when you're describing a drink that has no id (e.g. an improvised or substituted build). This does not return anything; just call it whenever you recommend or start walking through a drink.",
+    "type": "client",
+    "expects_response": false,
+    "response_timeout_secs": 10,
+    "parameters": {
+        "type": "object",
+        "required": [],
+        "description": "The cocktail to show. Pass `id` whenever you have one.",
+        "properties": {
+            "id": {
+                "type": "string",
+                "description": "TheCocktailDB drink id returned by a cocktail tool, e.g. \"11007\". When present, the card fetches the canonical recipe and the other fields are ignored."
+            },
+            "name": {
+                "type": "string",
+                "description": "Drink name. Used only when no id is available (improvised builds)."
+            },
+            "glass": {
+                "type": "string",
+                "description": "Recommended glass, e.g. \"Coupe\". Only used when no id is given."
+            },
+            "image": {
+                "type": "string",
+                "description": "Optional image URL. Only used when no id is given."
+            },
+            "ingredients": {
+                "type": "array",
+                "description": "Ingredient lines. Only used when no id is given.",
+                "items": {
+                    "type": "object",
+                    "required": ["name"],
+                    "description": "One measured ingredient.",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Ingredient name, e.g. \"Gin\"."
+                        },
+                        "measure": {
+                            "type": "string",
+                            "description": "Amount, e.g. \"2 oz\". Optional."
+                        }
+                    }
+                }
+            },
+            "steps": {
+                "type": "array",
+                "description": "Ordered preparation steps in plain language. Only used when no id is given.",
+                "items": {
+                    "type": "string",
+                    "description": "A single preparation step."
+                }
+            }
+        }
+    },
+    "dynamic_variables": {
+        "dynamic_variable_placeholders": {}
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "name": "start_timer",
+    "description": "Start a visible on-screen countdown for a timed step — shaking, stirring, steeping, chilling, or letting something rest. Call it when a step has a duration so the guest can keep their hands free. Does not return anything.",
+    "type": "client",
+    "expects_response": false,
+    "response_timeout_secs": 10,
+    "parameters": {
+        "type": "object",
+        "required": ["seconds"],
+        "description": "The countdown to start.",
+        "properties": {
+            "seconds": {
+                "type": "integer",
+                "description": "Duration in seconds, e.g. 15 for a hard shake or 120 for a two-minute chill."
+            },
+            "label": {
+                "type": "string",
+                "description": "Short label for what's being timed, e.g. \"Shake\" or \"Chill the glass\"."
+            }
+        }
+    },
+    "dynamic_variables": {
+        "dynamic_variable_placeholders": {}
+    }
+}

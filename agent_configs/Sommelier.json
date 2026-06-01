@@ -1,0 +1,250 @@
+{
+    "name": "Sommelier",
+    "conversation_config": {
+        "asr": {
+            "quality": "high",
+            "provider": "elevenlabs",
+            "user_input_audio_format": "pcm_16000",
+            "keywords": []
+        },
+        "turn": {
+            "turn_timeout": 7,
+            "silence_end_call_timeout": -1,
+            "mode": "turn"
+        },
+        "tts": {
+            "model_id": "eleven_flash_v2",
+            "voice_id": "pFZP5JQG7iQjIQuC4Bku",
+            "supported_voices": [],
+            "agent_output_audio_format": "pcm_16000",
+            "optimize_streaming_latency": 3,
+            "stability": 0.5,
+            "speed": 1,
+            "similarity_boost": 0.8,
+            "pronunciation_dictionary_locators": []
+        },
+        "conversation": {
+            "text_only": false,
+            "max_duration_seconds": 600,
+            "client_events": [
+                "audio",
+                "interruption"
+            ],
+            "source_attribution": true
+        },
+        "language_presets": {},
+        "agent": {
+            "first_message": "Ah, wine — my favorite subject. I'm the house sommelier. Tell me what you're eating or the mood you're after, and I'll find you the right bottle.",
+            "language": "en",
+            "dynamic_variables": {
+                "dynamic_variable_placeholders": {}
+            },
+            "prompt": {
+                "prompt": "# Personality\nYou are the Sommelier at Last Call — a warm, knowledgeable wine expert with a velvety, unhurried voice. You love wine and you love sharing it, but you are never a snob: your job is to make a home host feel confident, not small. You speak plainly, with the odd vivid image, and you delight in a good, affordable bottle as much as a grand one.\n\n# Environment\nYou are speaking out loud to a guest through a voice widget. They can't see text, so everything you say must work when heard, not read. The guest has just been transferred to you mid-conversation from Last Call, the bar concierge — so the earlier part of this conversation is already in your history. Read it: you likely already know the guest's name, their taste, and their alcohol preference. Use that naturally instead of asking again; greet them as someone you've just been handed, not a stranger.\n\n# Tone\nKeep turns short and spoken-friendly — usually one to three sentences. Sound like a sommelier leaning over the table, not a textbook. Ask one question at a time. When you recommend a wine, name the style or grape, say what it tastes like in a few plain words, and say why it fits — then stop and let them react. Spell out numbers and units so they're easy to hear (say \"twelve to fifteen degrees Celsius\", not a symbol). An occasional aside is welcome; don't lecture.\n\n# Goal\nHelp the guest choose a wine they'll enjoy and feel good serving.\n1. Find the occasion: a dish they're pairing, a mood, a grape they already like, or a budget.\n2. Recommend one wine that fits, and say why in a sentence — match weight to weight, mind acid and tannin, and lean on classic pairings.\n3. Offer a serving tip when it helps — temperature, glass, whether to decant.\n4. Offer a lighter, lower-alcohol, or zero-proof option when it suits the guest.\nFavor real, widely available styles and honest, approachable guidance.\n\n# Knowledge base\nFor pairing principles, grape and style profiles, serving temperatures, glassware, and low- or zero-proof options, draw on the house cellar notes in your knowledge base rather than guessing, and mention you're going by the house cellar notes when you do.\n\n# Handing back to the bar\nYou only handle wine. The moment the guest turns to anything that isn't wine — a cocktail, a spirit, beer, making a mixed drink, or saving or keeping a cocktail in their favorites — hand them back to Last Call, the bar concierge, by transferring the conversation with `transfer_to_agent` and a warm one-line cue like \"Let me pass you back to the bar for that.\" This takes priority even when the request is wrapped in a thank-you or a goodbye: if the guest mentions a cocktail or asks to save a drink, transfer back so the bar can handle it — do not end the call in their place. You can't save cocktails or mix drinks yourself, so never try and never just acknowledge it — hand it back.\n\n# Conversation flow\nWhen the guest needs a moment to grab a bottle, check a label, or taste, and tells you to hang on, use skip_turn to wait quietly instead of filling the silence. When the guest is clearly finished with everything — \"that's all\", \"goodbye\", \"thanks, I'm set\" — and has no pending cocktail or drink request, give a warm one-line send-off and call end_call to close out. But if they thank you while also mentioning a cocktail, saving a drink, or anything non-wine, transfer back to the bar instead of ending — a thank-you alone is not a signal to hang up. Don't hang up while they still have questions.\n\n# Guardrails\nStay on wine, pairings, and hosting. Encourage responsible enjoyment: never push extra or stronger wine, honor a stated low- or zero-proof preference, and offer lighter or non-alcoholic options naturally. If someone seems they've had enough, suggest water or a zero-proof option without lecturing. Don't give medical, legal, or dosing advice. Never help with anything involving minors and alcohol. If you don't know something, say so plainly.",
+                "llm": "gemini-2.5-flash",
+                "temperature": 0.5,
+                "max_tokens": -1,
+                "tool_ids": [],
+                "built_in_tools": {
+                    "end_call": {
+                        "name": "end_call",
+                        "description": "",
+                        "params": {
+                            "system_tool_type": "end_call"
+                        }
+                    },
+                    "skip_turn": {
+                        "name": "skip_turn",
+                        "description": "",
+                        "params": {
+                            "system_tool_type": "skip_turn"
+                        }
+                    },
+                    "transfer_to_agent": {
+                        "name": "transfer_to_agent",
+                        "description": "Transfer the guest back to Last Call, the bar concierge, when they want cocktails, spirits, beer, or any non-wine drink.",
+                        "params": {
+                            "system_tool_type": "transfer_to_agent",
+                            "transfers": [
+                                {
+                                    "agent_id": "agent_1301kswshvrjfaz954ft54a2z0n3",
+                                    "condition": "The guest wants to talk about cocktails, spirits, beer, or making a mixed drink, or otherwise asks for the bartender rather than wine.",
+                                    "transfer_message": "Of course — let me pass you back to the bar.",
+                                    "enable_transferred_agent_first_message": false,
+                                    "delay_ms": 0
+                                }
+                            ]
+                        }
+                    }
+                },
+                "mcp_server_ids": [],
+                "native_mcp_server_ids": [],
+                "knowledge_base": [
+                    {
+                        "type": "file",
+                        "name": "wine-pairing-101",
+                        "id": "LSby2yMwRjmRoWOA9dM7",
+                        "usage_mode": "auto"
+                    }
+                ],
+                "ignore_default_personality": false,
+                "rag": {
+                    "enabled": true,
+                    "embedding_model": "e5_mistral_7b_instruct",
+                    "max_vector_distance": 0.6,
+                    "max_documents_length": 50000,
+                    "max_retrieved_rag_chunks_count": 20
+                },
+                "custom_llm": null
+            }
+        }
+    },
+    "platform_settings": {
+        "auth": {
+            "enable_auth": false,
+            "allowlist": [],
+            "shareable_token": null
+        },
+        "evaluation": {
+            "criteria": []
+        },
+        "widget": {
+            "variant": "full",
+            "placement": "bottom-right",
+            "expandable": "never",
+            "avatar": {
+                "type": "orb",
+                "color_1": "#7b2d4e",
+                "color_2": "#d98ca6"
+            },
+            "feedback_mode": "none",
+            "bg_color": "#ffffff",
+            "text_color": "#000000",
+            "btn_color": "#000000",
+            "btn_text_color": "#ffffff",
+            "border_color": "#e1e1e1",
+            "focus_color": "#000000",
+            "shareable_page_show_terms": true,
+            "show_avatar_when_collapsed": false,
+            "disable_banner": false,
+            "mic_muting_enabled": false,
+            "transcript_enabled": false,
+            "text_input_enabled": true,
+            "text_contents": {
+                "main_label": null,
+                "start_call": null,
+                "new_call": null,
+                "end_call": null,
+                "mute_microphone": null,
+                "change_language": null,
+                "collapse": null,
+                "expand": null,
+                "copied": null,
+                "accept_terms": null,
+                "dismiss_terms": null,
+                "listening_status": null,
+                "speaking_status": null,
+                "connecting_status": null,
+                "input_label": null,
+                "input_placeholder": null,
+                "user_ended_conversation": null,
+                "agent_ended_conversation": null,
+                "conversation_id": null,
+                "error_occurred": null,
+                "copy_id": null
+            },
+            "language_selector": false,
+            "supports_text_only": true,
+            "language_presets": {},
+            "styles": {
+                "base": null,
+                "base_hover": null,
+                "base_active": null,
+                "base_border": null,
+                "base_subtle": null,
+                "base_primary": null,
+                "base_error": null,
+                "accent": null,
+                "accent_hover": null,
+                "accent_active": null,
+                "accent_border": null,
+                "accent_subtle": null,
+                "accent_primary": null,
+                "overlay_padding": null,
+                "button_radius": null,
+                "input_radius": null,
+                "bubble_radius": null,
+                "sheet_radius": null,
+                "compact_sheet_radius": null,
+                "dropdown_sheet_radius": null
+            },
+            "border_radius": null,
+            "btn_radius": null,
+            "action_text": null,
+            "start_call_text": null,
+            "end_call_text": null,
+            "expand_text": null,
+            "listening_text": null,
+            "speaking_text": null,
+            "shareable_page_text": null,
+            "terms_text": null,
+            "terms_html": null,
+            "terms_key": null,
+            "override_link": null,
+            "custom_avatar_path": null
+        },
+        "data_collection": {},
+        "overrides": {
+            "conversation_config_override": {
+                "tts": {
+                    "voice_id": false
+                },
+                "conversation": {
+                    "text_only": true
+                },
+                "agent": {
+                    "first_message": false,
+                    "language": false,
+                    "prompt": {
+                        "prompt": false
+                    }
+                }
+            },
+            "custom_llm_extra_body": false,
+            "enable_conversation_initiation_client_data_from_webhook": false
+        },
+        "call_limits": {
+            "agent_concurrency_limit": -1,
+            "daily_limit": 100000,
+            "bursting_enabled": true
+        },
+        "privacy": {
+            "record_voice": true,
+            "retention_days": -1,
+            "delete_transcript_and_pii": false,
+            "delete_audio": false,
+            "apply_to_existing_conversations": false,
+            "zero_retention_mode": false
+        },
+        "workspace_overrides": {
+            "webhooks": {
+                "post_call_webhook_id": null
+            },
+            "conversation_initiation_client_data_webhook": null
+        },
+        "safety": {
+            "is_blocked_ivc": false,
+            "is_blocked_non_ivc": false,
+            "ignore_safety_evaluation": false
+        },
+        "testing": {
+            "attached_tests": []
+        },
+        "ban": null
+    },
+    "tags": [
+        "last-call",
+        "sommelier",
+        "phase-6"
+    ]
+}

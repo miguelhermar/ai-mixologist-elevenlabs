@@ -1,0 +1,25 @@
+{
+    "name": "get_cocktail_details",
+    "description": "Get the full recipe for one cocktail by its id. Use after find_cocktails_by_ingredient or suggest_by_mood returns a drink id and the guest wants to make it. Returns ingredients with measures, glass, and step-by-step instructions.",
+    "type": "webhook",
+    "api_schema": {
+        "url": "https://chart-karma-pilot-extra.trycloudflare.com/api/cocktails/{id}",
+        "method": "GET",
+        "path_params_schema": {
+            "id": {
+                "type": "string",
+                "description": "TheCocktailDB drink id returned by another cocktail tool, e.g. \"11007\"."
+            }
+        },
+        "request_headers": {
+            "Content-Type": "application/json"
+        }
+    },
+    "response_timeout_secs": 20,
+    "dynamic_variables": {
+        "dynamic_variable_placeholders": {}
+    },
+    "assignments": [],
+    "disable_interruptions": false,
+    "force_pre_tool_speech": false
+}

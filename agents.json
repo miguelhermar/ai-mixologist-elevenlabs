@@ -1,0 +1,16 @@
+{
+    "agents": [
+        {
+            "config": "agent_configs/Last-Call.json",
+            "id": "agent_1301kswshvrjfaz954ft54a2z0n3",
+            "version_id": "agtvrsn_8101kt0qbakce6vaja45fzebyqak",
+            "branch_id": "agtbrch_1901kswshx6zf8nsykfs07ada5z9"
+        },
+        {
+            "config": "agent_configs/Sommelier.json",
+            "id": "agent_0501kt0h021gfs48zhaaah99ec9n",
+            "version_id": "agtvrsn_8801kt0qbc1jehgbmrev0aqfwa81",
+            "branch_id": "agtbrch_7601kt0h02j4f18929bwne0ntjqv"
+        }
+    ]
+}

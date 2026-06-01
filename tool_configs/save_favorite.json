@@ -1,0 +1,40 @@
+{
+    "name": "save_favorite",
+    "description": "Save a cocktail to the guest's favorites. Use when the guest says they love a drink or wants to keep it (e.g. \"save this one\" or \"add that to my favorites\"). Provide the drink's name and id.",
+    "type": "webhook",
+    "api_schema": {
+        "url": "https://chart-karma-pilot-extra.trycloudflare.com/api/favorites",
+        "method": "POST",
+        "request_body_schema": {
+            "type": "object",
+            "description": "The cocktail to save.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The cocktail's name, e.g. \"Margarita\"."
+                },
+                "id": {
+                    "type": "string",
+                    "description": "TheCocktailDB drink id for the cocktail, e.g. \"11007\"."
+                }
+            },
+            "required": [
+                "name",
+                "id"
+            ]
+        },
+        "request_headers": {
+            "Content-Type": "application/json",
+            "Authorization": {
+                "secret_id": "d7I5t9eE2CNFoPGok4zO"
+            }
+        }
+    },
+    "response_timeout_secs": 20,
+    "dynamic_variables": {
+        "dynamic_variable_placeholders": {}
+    },
+    "assignments": [],
+    "disable_interruptions": false,
+    "force_pre_tool_speech": false
+}

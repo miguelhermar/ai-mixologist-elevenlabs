@@ -1,0 +1,16 @@
+{
+    "name": "get_shopping_list",
+    "description": "Read back the guest's current shopping list. This RETURNS the list to you, so call it when the guest asks what's on their list (or what they still need) before answering. Takes no parameters.",
+    "type": "client",
+    "expects_response": true,
+    "response_timeout_secs": 10,
+    "parameters": {
+        "type": "object",
+        "required": [],
+        "description": "No parameters.",
+        "properties": {}
+    },
+    "dynamic_variables": {
+        "dynamic_variable_placeholders": {}
+    }
+}

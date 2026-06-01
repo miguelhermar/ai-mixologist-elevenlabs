@@ -1,0 +1,59 @@
+{
+    "tools": [
+        {
+            "type": "webhook",
+            "config": "tool_configs/search_cocktail_by_name.json",
+            "id": "tool_3401ksxakf1feq79j6sf7mhwyw97"
+        },
+        {
+            "type": "webhook",
+            "config": "tool_configs/find_cocktails_by_ingredient.json",
+            "id": "tool_1601ksxakg3pfv0ryphjggmymx55"
+        },
+        {
+            "type": "webhook",
+            "config": "tool_configs/get_cocktail_details.json",
+            "id": "tool_5001ksxakh2key1a391qb3ca92cz"
+        },
+        {
+            "type": "webhook",
+            "config": "tool_configs/random_cocktail.json",
+            "id": "tool_7601ksxakj2te84vxmdtbnc1dymh"
+        },
+        {
+            "type": "webhook",
+            "config": "tool_configs/suggest_by_mood.json",
+            "id": "tool_5601ksxakk2ge68b164j11dpxcgj"
+        },
+        {
+            "type": "webhook",
+            "config": "tool_configs/save_favorite.json",
+            "id": "tool_1901ksxakm23ezwbz9g49426b2jz"
+        },
+        {
+            "type": "client",
+            "config": "tool_configs/show_recipe_card.json",
+            "id": "tool_9801ksxyvvzhedyv9swky4w16n42"
+        },
+        {
+            "type": "client",
+            "config": "tool_configs/start_timer.json",
+            "id": "tool_9801ksxyvwzafamrkezcn51m5bk5"
+        },
+        {
+            "type": "client",
+            "config": "tool_configs/add_to_shopping_list.json",
+            "id": "tool_9101ksxyvxxzfmm9nggm7dzrpt1x"
+        },
+        {
+            "type": "client",
+            "config": "tool_configs/set_ambiance.json",
+            "id": "tool_2301ksxyvyw0f8qbgep4yaw9c4jk"
+        },
+        {
+            "type": "client",
+            "config": "tool_configs/get_shopping_list.json",
+            "id": "tool_4201ksxyvzstfhe8j9dpv4d0x792"
+        }
+    ]
+}

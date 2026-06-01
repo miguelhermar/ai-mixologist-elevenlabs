@@ -1,0 +1,50 @@
+{
+    "name": "suggest_by_mood",
+    "description": "Suggest cocktails that fit a mood, honoring the guest's ABV preference. Use when the guest describes a vibe rather than a specific drink (e.g. \"something bright and refreshing\" or \"a cozy nightcap\"). Returns a short list of drink names and ids; call get_cocktail_details to make one.",
+    "type": "webhook",
+    "api_schema": {
+        "url": "https://chart-karma-pilot-extra.trycloudflare.com/api/cocktails/by-mood",
+        "method": "GET",
+        "query_params_schema": {
+            "properties": {
+                "mood": {
+                    "type": "string",
+                    "description": "The desired vibe. One of: bright, sour, boozy, refreshing, cozy, celebratory, bitter, tropical, classic.",
+                    "enum": [
+                        "bright",
+                        "sour",
+                        "boozy",
+                        "refreshing",
+                        "cozy",
+                        "celebratory",
+                        "bitter",
+                        "tropical",
+                        "classic"
+                    ]
+                },
+                "abv_mode": {
+                    "type": "string",
+                    "description": "Alcohol preference. Use \"zero-proof\" for non-alcoholic, \"low-abv\" for lighter drinks, \"regular\" otherwise.",
+                    "enum": [
+                        "regular",
+                        "low-abv",
+                        "zero-proof"
+                    ]
+                }
+            },
+            "required": [
+                "mood"
+            ]
+        },
+        "request_headers": {
+            "Content-Type": "application/json"
+        }
+    },
+    "response_timeout_secs": 20,
+    "dynamic_variables": {
+        "dynamic_variable_placeholders": {}
+    },
+    "assignments": [],
+    "disable_interruptions": false,
+    "force_pre_tool_speech": false
+}

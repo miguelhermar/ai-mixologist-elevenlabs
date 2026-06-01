@@ -1,0 +1,315 @@
+{
+    "name": "Last Call",
+    "conversation_config": {
+        "asr": {
+            "quality": "high",
+            "provider": "elevenlabs",
+            "user_input_audio_format": "pcm_16000",
+            "keywords": []
+        },
+        "turn": {
+            "turn_timeout": 7,
+            "silence_end_call_timeout": -1,
+            "mode": "turn"
+        },
+        "tts": {
+            "model_id": "eleven_flash_v2",
+            "voice_id": "cjVigY5qzO86Huf0OWal",
+            "supported_voices": [],
+            "agent_output_audio_format": "pcm_16000",
+            "optimize_streaming_latency": 3,
+            "stability": 0.5,
+            "speed": 1,
+            "similarity_boost": 0.8,
+            "pronunciation_dictionary_locators": []
+        },
+        "conversation": {
+            "text_only": false,
+            "max_duration_seconds": 600,
+            "client_events": [
+                "audio",
+                "interruption"
+            ],
+            "source_attribution": true
+        },
+        "language_presets": {
+            "es": {
+                "overrides": {}
+            }
+        },
+        "agent": {
+            "first_message": "Welcome to Last Call, {{user_name}} — I'm your bar concierge. Tell me what you're in the mood for, or what bottles you've got, and I'll mix you up something good.",
+            "language": "en",
+            "dynamic_variables": {
+                "dynamic_variable_placeholders": {
+                    "user_name": "friend",
+                    "taste_profile": "no strong preference yet",
+                    "abv_mode": "regular",
+                    "available_spirits": "whatever you have on hand"
+                }
+            },
+            "prompt": {
+                "prompt": "# Personality\nYou are \"Last Call\", a warm, witty speakeasy bartender and bar concierge. You're generous, a little playful, and genuinely delighted to make someone a great drink. You know cocktails cold — classics, riffs, and zero-proof builds — and you wear that knowledge lightly.\n\n# Environment\nYou're speaking out loud to a guest through a voice widget on a website. They can't see text, so everything you say must work when heard, not read. They may be cooking, measuring, or pouring while you talk.\n\n# Guest\nYou're serving {{user_name}}. Greet them by name once, naturally, then don't overuse it. Their taste profile is: {{taste_profile}}. Their alcohol preference (abv_mode) is: {{abv_mode}} — honor it by changing what's actually in the glass, not just by saying so: \"zero-proof\" means recommend only non-alcoholic builds; \"low-abv\" means pick a genuinely light drink or lighten a classic — pour less spirit, lengthen it with soda, tonic, or extra mixer, or swap in a zero-proof spirit, and tell them how you lightened it; \"regular\" means anything goes. The same applies the moment a guest asks for something light, low-alcohol, or non-alcoholic out loud, whatever their abv_mode says. They have these spirits and ingredients on hand: {{available_spirits}}. Lean on what they already have before suggesting a shopping trip. If any of these read like a generic placeholder (e.g. \"friend\", \"no strong preference yet\", \"whatever you have on hand\"), just treat it as unknown and ask naturally instead.\n\n# Tone\nKeep turns short and spoken-friendly — usually one to three sentences. Sound like a real bartender across the bar, not a manual. Ask one question at a time. When you give a recipe out loud, name the drink, list ingredients with simple measures (e.g. \"two ounces of gin\"), then walk the steps one at a time. Spell out numbers and units so they're easy to hear. Use light, natural speech; an occasional aside is welcome, but don't ramble.\n\n# Goal\nHelp the guest land on a drink they'll love and feel confident making.\n1. Find out what they want: a mood (something bright, cozy, sour, boozy, low-key), an occasion, or which bottles and mixers they already have.\n2. Recommend one cocktail that fits, and say why in a sentence.\n3. If they're in, walk them through it step by step, pausing so they can keep up.\n4. Offer a simple substitution or a lighter, low- or zero-proof version when it helps — and whenever the guest wants low-ABV or zero-proof, make the drink you actually recommend fit that, rather than naming a full-strength classic.\nFavor real, well-known cocktails and honest measures.\n\n# Tools\nYou have recipe tools that fetch real cocktail data, screen tools that show things on the guest's screen, and a knowledge base for technique questions. Use the recipe tools instead of reciting from memory so specs are accurate.\n\nRecipe tools: When the guest names a drink, call `search_cocktail_by_name`. When they say what bottles or ingredients they have, call `find_cocktails_by_ingredient`. When they describe a vibe rather than a drink, call `suggest_by_mood` and pass their `abv_mode` ({{abv_mode}}). When they're undecided and want a surprise, call `random_cocktail`. The ingredient and mood tools return short lists with ids — once the guest picks one, call `get_cocktail_details` with that id to get the full recipe before you walk them through it. When the guest wants to keep a drink, call `save_favorite` with its name and id.\n\nScreen tools: When you recommend or start walking through a drink, call `show_recipe_card` and pass the drink's `id` so the card shows the exact recipe (only pass name/ingredients/steps inline for an improvised build that has no id). For any timed step — shaking, stirring, chilling, steeping — call `start_timer` with the seconds and a short label so the guest can keep their hands free. When the guest is missing an ingredient or tool, or asks you to note something down, call `add_to_shopping_list`; if they mention several items at once, pass them all together in a single `items` array rather than one at a time. When they ask what's on their list or what they still need, call `get_shopping_list` and use what it returns. Match the mood with `set_ambiance` — \"tiki\" for tropical or rum drinks, \"speakeasy\" for classics, \"bright\" for fresh daytime drinks.\n\nKnowledge base: For \"how do I\" technique and glossary questions — shake vs stir, what a glass is for, measures and ratios, substitutions, zero-proof swaps — draw on the house bartending guide in your knowledge base rather than guessing, and mention you're going by the house guide when you do.\n\nDon't read ids or URLs aloud; speak naturally. If a tool returns nothing useful, say so briefly and offer a sensible classic build instead.\n\nWine: You handle cocktails and spirits, not wine. When the guest asks about wine — pairing a wine with food, choosing or buying a bottle, grape varieties or wine styles, or what to pour with a meal — hand them to the house sommelier by transferring the conversation with `transfer_to_agent`, after a warm one-line cue. The sommelier has their own wine knowledge and will take it from there; don't try to recommend wine yourself.\n\n# Conversation flow\nIf the guest speaks to you in another language, switch and continue the whole conversation in that language (your language detection handles this) — keep the same warm tone. When the guest needs a moment to measure, pour, or grab something and tells you to hang on, use `skip_turn` to wait quietly instead of filling the silence. When the guest signals they're done — \"that's all\", \"goodbye\", \"thanks, I'm set\" — say a warm one-line send-off and call `end_call` to close out; don't hang up while they still have questions.\n\n# Guardrails\nStay on drinks, bars, and hosting — politely steer back if the conversation wanders far afield. Encourage responsible enjoyment: never push extra drinks, and offer low- or zero-ABV options naturally. If someone seems they've had enough, suggest water or a zero-proof option without lecturing. Don't give medical, legal, or dosing advice. Never help with anything involving minors and alcohol. If you don't know something, say so plainly.",
+                "llm": "gemini-2.5-flash",
+                "temperature": 0.5,
+                "max_tokens": -1,
+                "tool_ids": [
+                    "tool_3401ksxakf1feq79j6sf7mhwyw97",
+                    "tool_1601ksxakg3pfv0ryphjggmymx55",
+                    "tool_5001ksxakh2key1a391qb3ca92cz",
+                    "tool_7601ksxakj2te84vxmdtbnc1dymh",
+                    "tool_5601ksxakk2ge68b164j11dpxcgj",
+                    "tool_1901ksxakm23ezwbz9g49426b2jz",
+                    "tool_9801ksxyvvzhedyv9swky4w16n42",
+                    "tool_9801ksxyvwzafamrkezcn51m5bk5",
+                    "tool_9101ksxyvxxzfmm9nggm7dzrpt1x",
+                    "tool_2301ksxyvyw0f8qbgep4yaw9c4jk",
+                    "tool_4201ksxyvzstfhe8j9dpv4d0x792"
+                ],
+                "built_in_tools": {
+                    "end_call": {
+                        "name": "end_call",
+                        "description": "",
+                        "params": {
+                            "system_tool_type": "end_call"
+                        }
+                    },
+                    "language_detection": {
+                        "name": "language_detection",
+                        "description": "",
+                        "params": {
+                            "system_tool_type": "language_detection"
+                        }
+                    },
+                    "skip_turn": {
+                        "name": "skip_turn",
+                        "description": "",
+                        "params": {
+                            "system_tool_type": "skip_turn"
+                        }
+                    },
+                    "transfer_to_agent": {
+                        "name": "transfer_to_agent",
+                        "description": "Hand the guest to the house Sommelier for wine questions — pairings, choosing a bottle, grape varieties, what to pour with a meal.",
+                        "params": {
+                            "system_tool_type": "transfer_to_agent",
+                            "transfers": [
+                                {
+                                    "agent_id": "agent_0501kt0h021gfs48zhaaah99ec9n",
+                                    "condition": "The guest asks about wine — pairing wine with food, choosing or buying a bottle, grape varieties or wine styles, or what wine to serve. Not for cocktails, spirits, or beer.",
+                                    "transfer_message": "Wine — let me bring in our sommelier for that.",
+                                    "enable_transferred_agent_first_message": true,
+                                    "delay_ms": 0
+                                }
+                            ]
+                        }
+                    }
+                },
+                "mcp_server_ids": [],
+                "native_mcp_server_ids": [],
+                "knowledge_base": [
+                    {
+                        "type": "file",
+                        "name": "bartending-101",
+                        "id": "7JUtybkQNVnO0h9E5s2C",
+                        "usage_mode": "auto"
+                    }
+                ],
+                "ignore_default_personality": false,
+                "rag": {
+                    "enabled": true,
+                    "embedding_model": "e5_mistral_7b_instruct",
+                    "max_vector_distance": 0.6,
+                    "max_documents_length": 50000,
+                    "max_retrieved_rag_chunks_count": 20
+                },
+                "custom_llm": null
+            }
+        }
+    },
+    "platform_settings": {
+        "auth": {
+            "enable_auth": false,
+            "allowlist": [],
+            "shareable_token": null
+        },
+        "evaluation": {
+            "criteria": [
+                {
+                    "id": "complete_recipe",
+                    "name": "complete_recipe",
+                    "type": "prompt",
+                    "conversation_goal_prompt": "The assistant recommended at least one specific cocktail and gave the guest a complete, makeable recipe — naming the drink and walking through its ingredients with measures and the steps to make it. Mark success only if the guest received enough to actually make a drink.",
+                    "use_knowledge_base": false
+                },
+                {
+                    "id": "responsible_service",
+                    "name": "responsible_service",
+                    "type": "prompt",
+                    "conversation_goal_prompt": "The assistant served responsibly: it honored the guest's stated alcohol preference (regular / low-ABV / zero-proof), never pushed extra or stronger drinks, and offered a low- or zero-proof option where it was natural. Mark success unless it pushed alcohol or ignored a zero-proof / low-ABV request.",
+                    "use_knowledge_base": false
+                }
+            ]
+        },
+        "widget": {
+            "variant": "full",
+            "placement": "bottom-right",
+            "expandable": "never",
+            "avatar": {
+                "type": "orb",
+                "color_1": "#2792dc",
+                "color_2": "#9ce6e6"
+            },
+            "feedback_mode": "none",
+            "bg_color": "#ffffff",
+            "text_color": "#000000",
+            "btn_color": "#000000",
+            "btn_text_color": "#ffffff",
+            "border_color": "#e1e1e1",
+            "focus_color": "#000000",
+            "shareable_page_show_terms": true,
+            "show_avatar_when_collapsed": false,
+            "disable_banner": false,
+            "mic_muting_enabled": false,
+            "transcript_enabled": false,
+            "text_input_enabled": false,
+            "text_contents": {
+                "main_label": null,
+                "start_call": null,
+                "new_call": null,
+                "end_call": null,
+                "mute_microphone": null,
+                "change_language": null,
+                "collapse": null,
+                "expand": null,
+                "copied": null,
+                "accept_terms": null,
+                "dismiss_terms": null,
+                "listening_status": null,
+                "speaking_status": null,
+                "connecting_status": null,
+                "input_label": null,
+                "input_placeholder": null,
+                "user_ended_conversation": null,
+                "agent_ended_conversation": null,
+                "conversation_id": null,
+                "error_occurred": null,
+                "copy_id": null
+            },
+            "language_selector": false,
+            "supports_text_only": false,
+            "language_presets": {},
+            "styles": {
+                "base": null,
+                "base_hover": null,
+                "base_active": null,
+                "base_border": null,
+                "base_subtle": null,
+                "base_primary": null,
+                "base_error": null,
+                "accent": null,
+                "accent_hover": null,
+                "accent_active": null,
+                "accent_border": null,
+                "accent_subtle": null,
+                "accent_primary": null,
+                "overlay_padding": null,
+                "button_radius": null,
+                "input_radius": null,
+                "bubble_radius": null,
+                "sheet_radius": null,
+                "compact_sheet_radius": null,
+                "dropdown_sheet_radius": null
+            },
+            "border_radius": null,
+            "btn_radius": null,
+            "action_text": null,
+            "start_call_text": null,
+            "end_call_text": null,
+            "expand_text": null,
+            "listening_text": null,
+            "speaking_text": null,
+            "shareable_page_text": null,
+            "terms_text": null,
+            "terms_html": null,
+            "terms_key": null,
+            "override_link": null,
+            "custom_avatar_path": null
+        },
+        "data_collection": {
+            "favorite_cocktail": {
+                "type": "string",
+                "description": "The name of the cocktail the guest liked most, chose to make, or saved during the call (e.g. \"Margarita\"). Use the specific drink name. If no particular drink stood out, leave empty."
+            },
+            "taste_profile": {
+                "type": "string",
+                "description": "A short phrase describing the guest's flavor preferences as expressed in the conversation (e.g. \"citrusy and sour\", \"boozy and bitter\", \"sweet and tropical\"). If they gave none, leave empty."
+            },
+            "abv_mode": {
+                "type": "string",
+                "enum": [
+                    "regular",
+                    "low-abv",
+                    "zero-proof"
+                ],
+                "description": "The guest's alcohol-strength preference for this call: \"regular\" for full-strength, \"low-abv\" for light, \"zero-proof\" for non-alcoholic. Infer from what they asked for; use \"regular\" if never indicated."
+            },
+            "made_a_drink": {
+                "type": "boolean",
+                "description": "True if the guest actually made or clearly committed to making a drink during the call (followed the steps, ran a timer, said they were mixing it). False if it stayed a recommendation only."
+            }
+        },
+        "overrides": {
+            "conversation_config_override": {
+                "tts": {
+                    "voice_id": false
+                },
+                "conversation": {
+                    "text_only": true
+                },
+                "agent": {
+                    "first_message": false,
+                    "language": false,
+                    "prompt": {
+                        "prompt": false
+                    }
+                }
+            },
+            "custom_llm_extra_body": false,
+            "enable_conversation_initiation_client_data_from_webhook": false
+        },
+        "call_limits": {
+            "agent_concurrency_limit": -1,
+            "daily_limit": 100000,
+            "bursting_enabled": true
+        },
+        "privacy": {
+            "record_voice": true,
+            "retention_days": -1,
+            "delete_transcript_and_pii": false,
+            "delete_audio": false,
+            "apply_to_existing_conversations": false,
+            "zero_retention_mode": false
+        },
+        "workspace_overrides": {
+            "webhooks": {
+                "post_call_webhook_id": null
+            },
+            "conversation_initiation_client_data_webhook": null
+        },
+        "safety": {
+            "is_blocked_ivc": false,
+            "is_blocked_non_ivc": false,
+            "ignore_safety_evaluation": false
+        },
+        "testing": {
+            "attached_tests": []
+        },
+        "ban": null
+    },
+    "tags": [
+        "last-call",
+        "bar-concierge",
+        "phase-6"
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "set_ambiance",
+    "description": "Set the on-screen mood/lighting theme to match the vibe. Use it when the guest asks for a vibe or when a drink suggests one — e.g. switch to \"tiki\" for tropical/rum drinks, \"speakeasy\" for classic/dark, or \"bright\" for fresh daytime drinks. Does not return anything.",
+    "type": "client",
+    "expects_response": false,
+    "response_timeout_secs": 10,
+    "parameters": {
+        "type": "object",
+        "required": ["mode"],
+        "description": "The ambiance to switch to.",
+        "properties": {
+            "mode": {
+                "type": "string",
+                "description": "One of: \"speakeasy\" (warm, low-lit, classic), \"tiki\" (tropical teal and orange), or \"bright\" (clean, well-lit, daytime)."
+            }
+        }
+    },
+    "dynamic_variables": {
+        "dynamic_variable_placeholders": {}
+    }
+}
