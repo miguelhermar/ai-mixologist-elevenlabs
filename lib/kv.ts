@@ -6,10 +6,13 @@
  * read-only filesystem, so writes must go to a managed store instead.
  *
  * This module returns a Redis client ONLY when the Upstash REST env vars are
- * present (`UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` — set
- * automatically by the Upstash Vercel Marketplace integration). When they're
- * absent (local dev / tests), it returns `null` and callers fall back to the
- * file store. So there is one code path, gated purely on configuration.
+ * present. The Vercel Marketplace integration injects these under one of two
+ * naming conventions depending on the integration variant:
+ *   - `UPSTASH_REDIS_REST_URL`  + `UPSTASH_REDIS_REST_TOKEN`  (Upstash native)
+ *   - `KV_REST_API_URL`         + `KV_REST_API_TOKEN`         (Vercel KV variant)
+ * We accept either. When neither is present (local dev / tests), this returns
+ * `null` and callers fall back to the file store — one code path, gated purely
+ * on configuration.
  */
 
 import { Redis } from "@upstash/redis";
@@ -20,11 +23,19 @@ const log = createLogger("kv");
 /** Shared key prefix so this app's keys are easy to spot in a shared Upstash db. */
 export const KV_PREFIX = "last-call";
 
+/** REST URL from whichever naming convention the host injected. */
+function restUrl(): string | undefined {
+  return process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+}
+
+/** REST token from whichever naming convention the host injected. */
+function restToken(): string | undefined {
+  return process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+}
+
 /** True when the Upstash REST credentials are configured in the environment. */
 export function isRedisConfigured(): boolean {
-  return Boolean(
-    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-  );
+  return Boolean(restUrl() && restToken());
 }
 
 let client: Redis | null = null;
@@ -46,7 +57,7 @@ export function getRedis(): Redis | null {
     }
     return null;
   }
-  client = Redis.fromEnv();
+  client = new Redis({ url: restUrl()!, token: restToken()! });
   log.info("Upstash Redis client initialized");
   return client;
 }
